@@ -4,7 +4,7 @@
 
 **Pair:** Christian Gabrielsson
 
-**Repo commit/tag:** (link — Labs 1–3; write `N/A` for Lab 4)
+**Repo commit/tag:** [Commit for lab 1](https://github.com/CGabrielsson/walkmates-test/commit/b07d989)
 
 ---
 
