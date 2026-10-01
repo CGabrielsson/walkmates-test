@@ -4,7 +4,7 @@
 
 **Pair:** Christian Gabrielsson
 
-**Repo commit/tag:**
+**Repo commit/tag:** https://github.com/CGabrielsson/walkmates-test/commit/d7598e18d63cc36f82c058001be777d6c91dbe16
 
 ---
 
