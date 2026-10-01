@@ -11,13 +11,20 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.h2.command.dml.Explain;
+
 /**
  * Lab 2, Part A — structural testing for {@link PricingCalculator} (FR-4.3).
  *
- * <p>Run coverage with {@code mvn clean test jacoco:report} and open
- * {@code target/site/jacoco/index.html}. Find the uncovered branches and add tests to reach
- * them — then look hard at the <em>overnight surcharge boundary</em>: there is a path that your
- * happy-path test "covers" but does not actually check (coverage ≠ correctness).</p>
+ * <p>
+ * Run coverage with {@code mvn clean test jacoco:report} and open
+ * {@code target/site/jacoco/index.html}. Find the uncovered branches and add
+ * tests to reach
+ * them — then look hard at the <em>overnight surcharge boundary</em>: there is
+ * a path that your
+ * happy-path test "covers" but does not actually check (coverage ≠
+ * correctness).
+ * </p>
  */
 class PricingCalculatorStructuralTest {
 
@@ -45,7 +52,53 @@ class PricingCalculatorStructuralTest {
     }
 
     // TODO (branch): a free SHELTER_VOLUNTEER listing always costs 0.00.
-    // TODO (branch): a clearly-overnight booking (e.g. 600 min) includes the 20% surcharge.
-    // TODO (BOUNDARY — this is the interesting one): a booking of exactly 480 minutes must NOT
-    //      be surcharged (FR-4.3 says strictly > 480). Write this test and see what happens.
+    @Test
+    @DisplayName("SHELTER_VOLUNTEER listing always costs 0.00 regardless of duration")
+    void freeShelterVolunteerListing() {
+        Booking booking = new Booking("seeker-1", "listing-1", 120);
+
+        double price = pricing.priceFor(booking, listing(ListingType.SHELTER_VOLUNTEER), seeker(TrustTier.VERIFIED));
+
+        assertThat(price).isEqualTo(0.00);
+    }
+
+    // TODO (branch): a clearly-overnight booking (e.g. 600 min) includes the 20%
+    // surcharge.
+    @Test
+    @DisplayName("600 min DOG_WALK for a VERIFIED seeker = 960 base + overnight surcharge + 12% fee = 1075.20")
+    void overnightBookingIncludesSurcharge() {
+        Booking booking = new Booking("seeker-1", "listing-1", 600);
+
+        double price = pricing.priceFor(booking, listing(ListingType.DOG_WALK), seeker(TrustTier.VERIFIED));
+
+        assertThat(price).isEqualTo(1075.20);
+    }
+    // TODO (BOUNDARY — this is the interesting one): a booking of exactly 480
+    // minutes must NOT
+    // be surcharged (FR-4.3 says strictly > 480). Write this test and see what
+    // happens.
+
+    // Now write a test for a booking of **exactly 480 minutes**. FR-4.3 says the
+    // 20% overnight
+    // surcharge applies only when duration is **strictly greater than** 480. What
+    // does your test show?
+    // Explain in your reflection how a test could "cover" the surcharge line yet
+    // **miss** this bug.
+
+    // Run this test class locally and record the expected boundary-test failure in
+    // your reflection
+    @Test
+    @DisplayName("Booking of exactly 480 minutes must not result in an overnight surcharge")
+    void exactlyEigthHoursDoesNotTriggerOvernightSurcharge() {
+        Booking booking = new Booking("seeker-1", "listing-1", 480);
+
+        double price = pricing.priceFor(booking, listing(ListingType.DOG_WALK), seeker(TrustTier.VERIFIED));
+
+        double expectedBase = 8.0 * 80.0;
+        double expectedFee = expectedBase * 0.12;
+        double expectedTotal = expectedBase + expectedFee;
+
+        assertThat(price).isEqualTo(expectedTotal);
+    }
+
 }

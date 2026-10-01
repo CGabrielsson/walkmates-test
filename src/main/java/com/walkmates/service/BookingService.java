@@ -15,9 +15,14 @@ import org.springframework.stereotype.Service;
 /**
  * Orchestrates booking creation and lifecycle per REQUIREMENTS FR-4.
  *
- * <p>This service is the Lab 2 component-isolation target: it depends on four repositories, the
- * {@link PricingCalculator}, and the {@link NotificationService} seam, so students mock those to
- * test it in isolation (including the notification interaction and the failure paths).</p>
+ * <p>
+ * This service is the Lab 2 component-isolation target: it depends on four
+ * repositories, the
+ * {@link PricingCalculator}, and the {@link NotificationService} seam, so
+ * students mock those to
+ * test it in isolation (including the notification interaction and the failure
+ * paths).
+ * </p>
  */
 @Service
 public class BookingService {
@@ -30,11 +35,11 @@ public class BookingService {
     private final NotificationService notifications;
 
     public BookingService(SeekerRepository seekers,
-                          ListingRepository listings,
-                          ProviderRepository providers,
-                          BookingRepository bookings,
-                          PricingCalculator pricing,
-                          NotificationService notifications) {
+            ListingRepository listings,
+            ProviderRepository providers,
+            BookingRepository bookings,
+            PricingCalculator pricing,
+            NotificationService notifications) {
         this.seekers = seekers;
         this.listings = listings;
         this.providers = providers;
@@ -44,8 +49,10 @@ public class BookingService {
     }
 
     /**
-     * Creates and confirms a booking if all FR-4.4 conditions hold, charging the Seeker's wallet
-     * and notifying them. Throws {@link BookingRejectedException} with the first failing reason.
+     * Creates and confirms a booking if all FR-4.4 conditions hold, charging the
+     * Seeker's wallet
+     * and notifying them. Throws {@link BookingRejectedException} with the first
+     * failing reason.
      *
      * @param seekerId        the booking Seeker
      * @param listingId       the Listing to book
@@ -63,12 +70,13 @@ public class BookingService {
             throw new BookingRejectedException("Listing is not available");
         }
 
-        // Rule 4: duration within range — constructed here so the range check (FR-4.1) runs.
+        // Rule 4: duration within range — constructed here so the range check (FR-4.1)
+        // runs.
         Booking booking = new Booking(seekerId, listingId, durationMinutes);
 
         // Rule 2: seeker's active bookings below the trust-tier max (FR-4.4 rule 2).
         long seekerActive = activeBookingCountForSeeker(seekerId);
-        if (seekerActive > seeker.getMaxConcurrentBookings()) {
+        if (seekerActive >= seeker.getMaxConcurrentBookings()) {
             throw new BookingRejectedException("Seeker booking limit reached for tier " + seeker.getTrustTier());
         }
 
